@@ -7,7 +7,7 @@
   "description": "Displays monsters in a fixed list UI with health/ES bars, buffs, DPS tracking, and rarity-based prioritization.",
   "license": "GNUv3",
   "entry": "AuraTracker.dll",
-  "icon": "icons/logo.png",
+  "icon": "images/logo.png",
   "homepage": "https://github.com/derekShaheen/Aura-Tracker-Gamehelper2",
   "distribution": {
     "type": "github-release",
