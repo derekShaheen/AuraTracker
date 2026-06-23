@@ -375,7 +375,7 @@ internal static class BuffVisuals
 
         string s = raw.Replace('_', ' ');
 
-        string[] drop = { "visual", "visuals", "monster", "mod", "6B", "buff", "magic", "mob", "effect", "effects", "rare", "display", "not", "hidden", "epk", "rarity" };
+        string[] drop = { "visual", "visuals", "monster", "mod", "6B", "buff", "magic", "mob", "effect", "effects", "rare", "display", "not", "hidden", "epk", "rarity", "77" };
         var parts = s.Split(' ', StringSplitOptions.RemoveEmptyEntries)
                      .Where(w => !drop.Any(d => string.Equals(w, d, StringComparison.OrdinalIgnoreCase)));
 
