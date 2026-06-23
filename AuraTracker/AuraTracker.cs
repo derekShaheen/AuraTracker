@@ -5,48 +5,42 @@ using System.Numerics;
 using AuraTracker.controllers;
 using AuraTracker.render;
 using Coroutine;
-using GameHelper;
-using GameHelper.CoroutineEvents;
-using GameHelper.Plugin;
-using GameHelper.RemoteEnums;
-using GameHelper.RemoteObjects.States;
-using GameHelper.RemoteObjects.States.InGameStateObjects;
-using Newtonsoft.Json;
+using OriathHub;
+using OriathHub.CoroutineEvents;
+using OriathHub.Plugin;
+using OriathHub.RemoteEnums;
+using OriathHub.RemoteObjects.States;
+using OriathHub.RemoteObjects.States.InGameStateObjects;
+using OriathHub.Utils;
 
 namespace AuraTracker
 {
-    public sealed class AuraTracker : PCore<AuraTrackerSettings>
+    public sealed class AuraTracker : PluginBase
     {
         private const string PluginVersion = "1.3.8.2";
 
+        private AuraTrackerSettings settings = new();
         private readonly DpsTracker dpsTracker = new();
         private readonly MonsterCollector monsterCollector = new();
         private readonly PanelRenderer panelRenderer = new();
         private readonly SettingsUiRenderer settingsRenderer = new(PluginVersion);
-        private ActiveCoroutine onAreaChange;
+        private ActiveCoroutine? onAreaChange;
         private Vector2? defaultLargeMapCenter;
         private bool isMenuOpen;
 
-        private string SettingsPath => Path.Join(this.DllDirectory, "config", "AuraTracker.settings.json");
+        private FileInfo SettingsFile => new(Path.Combine(DllDirectory, "config", "AuraTracker.settings.json"));
+
+        public override string Name => "AuraTracker";
+
+        public override string Description => "Displays monsters in a fixed list UI with health/ES bars, buffs, DPS tracking, and rarity-based prioritization.";
+
+        public override string Author => "Skrip";
+
+        public override string Version => PluginVersion;
 
         public override void OnEnable(bool isGameOpened)
         {
-            try
-            {
-                if (File.Exists(SettingsPath))
-                {
-                    var txt = File.ReadAllText(SettingsPath);
-                    this.Settings = JsonConvert.DeserializeObject<AuraTrackerSettings>(txt) ?? new AuraTrackerSettings();
-                }
-                else
-                {
-                    this.Settings = new AuraTrackerSettings();
-                }
-            }
-            catch
-            {
-                this.Settings = new AuraTrackerSettings();
-            }
+            settings = JsonHelper.CreateOrLoadJsonFile<AuraTrackerSettings>(SettingsFile);
 
             this.onAreaChange = CoroutineHandler.Start(OnAreaChange(), string.Empty, 0);
             this.defaultLargeMapCenter = null;
@@ -64,13 +58,12 @@ namespace AuraTracker
 
         public override void SaveSettings()
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath));
-            File.WriteAllText(SettingsPath, JsonConvert.SerializeObject(this.Settings, Formatting.Indented));
+            JsonHelper.SaveToFile(settings, SettingsFile);
         }
 
         public override void DrawSettings()
         {
-            this.settingsRenderer.Draw(this.Settings);
+            this.settingsRenderer.Draw(settings);
         }
 
         public override void DrawUI()
@@ -81,12 +74,12 @@ namespace AuraTracker
             }
 
             InGameState inGame = Core.States.InGameStateObject;
-            if (!this.Settings.DrawWhenGameInBackground && !Core.Process.Foreground)
+            if (!settings.DrawWhenGameInBackground && !Core.Process.Foreground)
             {
                 return;
             }
 
-            if (inGame.GameUi.SkillTreeNodesUiElements.Count > 0)
+            if (inGame.GameUi.IsSkillTreeOpen)
             {
                 return;
             }
@@ -99,13 +92,13 @@ namespace AuraTracker
             var overlaySize = new Vector2(Core.Overlay.Size.Width, Core.Overlay.Size.Height);
             var overlayCenter = overlaySize * 0.5f;
 
-            List<MonsterCollector.MonsterSnapshot> monsters = this.monsterCollector.Collect(this.Settings, inGame, overlayCenter);
+            List<MonsterCollector.MonsterSnapshot> monsters = this.monsterCollector.Collect(settings, inGame, overlayCenter);
             if (monsters.Count == 0)
             {
                 return;
             }
 
-            this.panelRenderer.Render(monsters, this.Settings, this.dpsTracker, overlaySize);
+            this.panelRenderer.Render(monsters, settings, this.dpsTracker, overlaySize);
         }
 
         private IEnumerator<Wait> OnAreaChange()

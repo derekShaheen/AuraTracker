@@ -1,6 +1,6 @@
 using System;
 using System.Numerics;
-using GameHelper.RemoteEnums;
+using OriathHub.RemoteEnums;
 using ImGuiNET;
 
 namespace AuraTracker.render;

@@ -4,8 +4,8 @@ using System.Linq;
 using System.Numerics;
 using AuraTracker.controllers;
 using AuraTracker.util;
-using GameHelper.RemoteEnums;
-using GameHelper.Utils;
+using OriathHub.RemoteEnums;
+using OriathHub.Utils;
 using ImGuiNET;
 
 namespace AuraTracker.render;

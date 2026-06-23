@@ -1,10 +1,10 @@
 ﻿using System.Numerics;
-using GameHelper.Plugin;
-using GameHelper.RemoteEnums; // Rarity
+using OriathHub.Plugin;
+using OriathHub.RemoteEnums; // Rarity
 
 namespace AuraTracker
 {
-    public sealed class AuraTrackerSettings : IPSettings
+    public sealed class AuraTrackerSettings
     {
         // General / filters
         public bool DrawWhenGameInBackground = false;

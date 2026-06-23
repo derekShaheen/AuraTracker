@@ -5,12 +5,12 @@ using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
 using AuraTracker.util;
-using GameHelper.RemoteEnums;
-using GameHelper.RemoteEnums.Entity;
-using GameHelper.RemoteObjects;
-using GameHelper.RemoteObjects.Components;
-using GameHelper.RemoteObjects.States;
-using GameHelper.RemoteObjects.States.InGameStateObjects;
+using OriathHub.RemoteEnums;
+using OriathHub.RemoteEnums.Entity;
+using OriathHub.RemoteObjects;
+using OriathHub.RemoteObjects.Components;
+using OriathHub.RemoteObjects.States;
+using OriathHub.RemoteObjects.States.InGameStateObjects;
 
 namespace AuraTracker.controllers;
 
