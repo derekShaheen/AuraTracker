@@ -17,7 +17,7 @@ namespace AuraTracker
 {
     public sealed class AuraTracker : PluginBase
     {
-        private const string PluginVersion = "1.3.8.2";
+        private const string PluginVersion = "1.3.8.3";
 
         private AuraTrackerSettings settings = new();
         private readonly DpsTracker dpsTracker = new();
