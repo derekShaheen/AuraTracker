@@ -23,7 +23,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '10.0.x'
 
       - name: Resolve build version from tag
         shell: pwsh
@@ -31,10 +31,49 @@ jobs:
           $v = "${{ github.ref_name }}" -replace '^v',''
           "VERSION=$v" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
+      - name: Download OriathHub SDK
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $feed = Join-Path $env:RUNNER_TEMP "oriathhub-feed"
+          New-Item -ItemType Directory -Path $feed -Force | Out-Null
+
+          $headers = @{
+            Accept = "application/vnd.github+json"
+            Authorization = "Bearer $env:GH_TOKEN"
+            "X-GitHub-Api-Version" = "2022-11-28"
+          }
+          $release = Invoke-RestMethod `
+            -Headers $headers `
+            -Uri "https://api.github.com/repos/danthespal/OriathHubSDK/releases/latest"
+
+          $assets = @($release.assets | Where-Object { $_.name -like "OriathHub.Sdk.*.nupkg" })
+          if ($assets.Count -ne 1) {
+            throw "Expected exactly one OriathHub SDK package in the latest release; found $($assets.Count)"
+          }
+
+          $asset = $assets[0]
+          $versionMatch = [regex]::Match($asset.name, '^OriathHub\.Sdk\.(?<version>.+)\.nupkg$')
+          if (-not $versionMatch.Success) {
+            throw "Could not determine the OriathHub SDK version from $($asset.name)"
+          }
+
+          $sdkVersion = $versionMatch.Groups['version'].Value
+          $destination = Join-Path $feed $asset.name
+
+          Invoke-WebRequest $asset.browser_download_url -OutFile $destination
+
+          "ORIATHHUB_FEED=$feed" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "ORIATHHUB_SDK_VERSION=$sdkVersion" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          Write-Host "Using OriathHub.Sdk $sdkVersion from release $($release.tag_name)"
+
       - name: Restore
         shell: pwsh
         run: |
-          dotnet restore "$env:PROJECT_FILE"
+          dotnet nuget add source "$env:ORIATHHUB_FEED" --name oriathhub-local
+          dotnet restore "$env:PROJECT_FILE" `
+            -p:OriathHubSdkVersion="$env:ORIATHHUB_SDK_VERSION"
 
       - name: Build (Release) to known folder
         shell: pwsh
@@ -45,6 +84,7 @@ jobs:
             -c Release `
             --no-restore `
             -p:Version=$env:VERSION `
+            -p:OriathHubSdkVersion="$env:ORIATHHUB_SDK_VERSION" `
             -p:ContinuousIntegrationBuild=true `
             -p:Deterministic=true `
             -p:ReferencePath="$referencePath" `
