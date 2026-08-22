@@ -115,7 +115,8 @@ jobs:
       - name: Zip
         shell: pwsh
         run: |
-          $zipName = "$env:PLUGIN_NAME-${{ github.ref_name }}.zip"
+          #$zipName = "$env:PLUGIN_NAME-${{ github.ref_name }}.zip"
+          $zipName = "$env:PLUGIN_NAME.zip"
           Compress-Archive -Path "package/*" -DestinationPath $zipName -Force
           "ZIP_NAME=$zipName" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
