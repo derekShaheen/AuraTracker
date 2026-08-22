@@ -1,4 +1,4 @@
-**AuraTracker** is a GameHelper2 plugin that tracks nearby enemies and displays their information in a fixed, easy-to-read panel on the left side of the screen.
+**AuraTracker** is an OriathHub / GameHelper2 plugin that tracks nearby enemies and displays their information in a fixed, easy-to-read panel on the left side of the screen.
 
 ![image](https://i.imgur.com/1svSUoL.png)
 
