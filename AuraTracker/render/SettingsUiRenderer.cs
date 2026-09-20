@@ -251,14 +251,14 @@ internal sealed class SettingsUiRenderer
             }
         }
 
-        ImGui.Spacing();
-        ImGui.Separator();
+        //ImGui.Spacing();
+        //ImGui.Separator();
 
-        float txtW = ImGui.CalcTextSize(versionLabel).X;
-        float availW = ImGui.GetContentRegionAvail().X;
-        float padX = MathF.Max(0f, (availW - txtW) * 0.5f);
-        float curX = ImGui.GetCursorPosX();
-        ImGui.SetCursorPosX(curX + padX);
-        ImGui.TextDisabled(versionLabel);
+        //float txtW = ImGui.CalcTextSize(versionLabel).X;
+        //float availW = ImGui.GetContentRegionAvail().X;
+        //float padX = MathF.Max(0f, (availW - txtW) * 0.5f);
+        //float curX = ImGui.GetCursorPosX();
+        //ImGui.SetCursorPosX(curX + padX);
+        //ImGui.TextDisabled(versionLabel);
     }
 }
